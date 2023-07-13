@@ -35,7 +35,7 @@ plotSigGenes = function(slide_results, plot_interactions = F, out_path = NULL) {
     lf_temp = sg_df[sg_df$lf_num == lf, ]
 
     # add the heights to each gene
-    lf_temp$plot_height = seq(1, nrow(lf_temp))
+    lf_temp$plot_height = seq(nrow(lf_temp), 1)
 
     sg_plot_df = rbind(sg_plot_df, lf_temp)
   }
