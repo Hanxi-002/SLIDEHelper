@@ -40,6 +40,8 @@ plotSigGenes = function(slide_results, plot_interactions = F, out_path = NULL) {
     sg_plot_df = rbind(sg_plot_df, lf_temp)
   }
 
+  text_color_vals = sort(unique(stringr::str_to_lower(sg_plot_df$color)))
+
   plot_list = list()
 
 
@@ -47,7 +49,7 @@ plotSigGenes = function(slide_results, plot_interactions = F, out_path = NULL) {
   marg_plot = sg_plot_df %>% dplyr::filter(sg_plot_df$lf_num %in% slide_results$SLIDE_res$marginal_vars) %>%
     ggplot2::ggplot(., ggplot2::aes(x = factor(lf_num), y = plot_height, label = names)) +
     ggplot2::geom_text(ggplot2::aes(color = factor(color))) +
-    ggplot2::scale_color_manual(values = c("blue", "red"), guide = "none") + ggplot2::theme_void() +
+    ggplot2::scale_color_manual(values = text_color_vals, guide = "none") + ggplot2::theme_void() +
     ggplot2::theme(axis.text.x = ggplot2::element_text(), axis.title.x = ggplot2::element_text(),
                    axis.title.y = ggplot2::element_text(angle = 90)) +
 
@@ -67,7 +69,7 @@ plotSigGenes = function(slide_results, plot_interactions = F, out_path = NULL) {
       ggplot2::geom_text(ggplot2::aes(color = factor(color),
                              fontface = ifelse(lf_num %in% slide_results$SLIDE_res$marginal_vars,
                                                                     "bold.italic", "plain"))) +
-      ggplot2::scale_color_manual(values = c("blue", "red"), guide = "none") + ggplot2::theme_void() +
+      ggplot2::scale_color_manual(values = text_color_vals, guide = "none") + ggplot2::theme_void() +
       ggplot2::theme(axis.text.x = ggplot2::element_text(), axis.title.x = ggplot2::element_text(),
                      axis.title.y = ggplot2::element_text(angle = 90)) +
       ggplot2::xlab("Significant Latent Factor") +
@@ -151,5 +153,5 @@ plotSigGenes = function(slide_results, plot_interactions = F, out_path = NULL) {
              height = 8, width = 12)
     }
   }
-
+  return(plot_list)
 }
