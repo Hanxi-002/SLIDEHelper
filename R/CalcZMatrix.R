@@ -17,6 +17,6 @@ CalcZMatrix <- function(x_path, er_path, out_path){
   
   z_matrix <- EssReg::predZ(x, er_res)
   colnames(z_matrix) <- paste0("Z", c(1:ncol(z_matrix)))
-  write.csv(z_matrix, paste0(out_path, "z_matrix.csv"), row.names = TRUE, col.names = TRUE)
+  write.csv(z_matrix, paste0(out_path, "z_matrix.csv"), row.names = TRUE)
   return(z_matrix)
 }

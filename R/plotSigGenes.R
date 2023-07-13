@@ -137,13 +137,15 @@ plotSigGenes = function(slide_results, plot_interactions = F, out_path = NULL) {
     ggplot2::ggsave(plot = marg_plot, filename = paste0(out_path, '/plotSigGenes_marginals.png'),
 
                     device = "png",
-                    width = 1.5 * length(slide_results$SLIDE_res$marginal_vars), height = 7)
+                    width = 1.5 * length(slide_results$SLIDE_res$marginal_vars), height = 7, 
+                    limitsize = FALSE)
 
     if (plot_interactions) {
 
       ggplot2::ggsave(plot = plt, filename = paste0(out_path, '/plotSigGenes.png'),
                       device = "png",
-                      width = 1.5 * length(unique(sg_plot_df$lf_num)), height = 7)
+                      width = 1.5 * length(unique(sg_plot_df$lf_num)), height = 7, 
+                      limitsize = FALSE)
 
       ggplot2::ggsave(plot = lf_graph, filename = paste0(out_path, '/plotInteractions.png'),
              height = 8, width = 12)
