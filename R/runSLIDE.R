@@ -29,7 +29,7 @@ runSLIDE <- function(y_path, z_path = NULL, z_matrix, er_path, method = 4, do_in
   
   cat("f_size is set as ", f_size, "\n")
   
-  SLIDE_res <- SLIDE::SLIDE(z, y, method = method, do_interacts = do_interacts, betas = NULL, top_prop = NULL, marginals = NULL,
+  SLIDE_res <- SLIDE:::SLIDE(z, y, method = method, do_interacts = do_interacts, betas = NULL, top_prop = NULL, marginals = NULL,
                             spec = spec, fdr = fdr, niter = niter, elbow = FALSE, f_size = f_size, parallel = TRUE, ncore = 10)
   
   SLIDE_param <- c(method, spec, fdr, niter, f_size)
