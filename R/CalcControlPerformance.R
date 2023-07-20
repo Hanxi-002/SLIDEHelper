@@ -25,7 +25,7 @@ CalcControlPerformance <- function(z_matrix, y_path, SLIDE_res, niter, condition
   sigK <- SLIDE_res$marginal_vals
   sigIn <- as.vector(SLIDE_res$SLIDE_res$interaction_vars)
   
-  IntData <- pairwise_interactions(sigK,z_matrix)
+  IntData <- PairwiseInteractions(sigK,z_matrix)
   Dataint <- IntData$interaction[, sigIn]
   Data_real <- data.frame(y = y, z_matrix[, sigK], Dataint)
   
@@ -44,7 +44,7 @@ CalcControlPerformance <- function(z_matrix, y_path, SLIDE_res, niter, condition
   
   for (i in 1:niter) {
     sigKRandom <- sample(ncol(z_matrix), size = length(sigK)) ## Random marginal
-    IntDataRandom <- pairwise_interactions(sigKRandom, z_matrix)
+    IntDataRandom <- PairwiseInteractions(sigKRandom, z_matrix)
     
     sigInRandom <- sample(ncol(IntDataRandom$interaction), size = length(sigIn)) ## Random interaction
     IntDataRandom <- IntDataRandom$interaction[, sigInRandom]
@@ -65,7 +65,7 @@ CalcControlPerformance <- function(z_matrix, y_path, SLIDE_res, niter, condition
   
   Partialreport <- NULL
   for (i in 1:niter) {
-    IntData  <- pairwise_interactions(sigK, z_matrix)
+    IntData  <- PairwiseInteractions(sigK, z_matrix)
     sigInRandom <- sample(ncol(IntData$interaction), size = length(sigIn)) ## Ranodm interaction
     
     IntDataRandom <- IntData$interaction[, sigInRandom]
