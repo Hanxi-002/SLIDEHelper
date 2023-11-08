@@ -8,7 +8,7 @@
 
 
 
-plotSigGenes = function(slide_results, plot_interactions = F, out_path = NULL) {
+plotSigGenes = function(slide_results, plot_interactions = F, out_path = NULL, plot_format = "pdf") {
 
   slide_vars = slide_results$feature_res
 
@@ -133,24 +133,23 @@ plotSigGenes = function(slide_results, plot_interactions = F, out_path = NULL) {
 
   if ( !is.null(out_path) ) {
 
+    saveRDS(sg_plot_df, paste0(out_path, '/sigLFs_Topfeatures.RDS'))
 
-    saveRDS(sg_plot_df, paste0(out_path, '/plotSigGenes_data.RDS'))
+    ggplot2::ggsave(plot = marg_plot, filename = paste0(out_path, '/sigLFs_marginals.', plot_format),
 
-    ggplot2::ggsave(plot = marg_plot, filename = paste0(out_path, '/plotSigGenes_marginals.png'),
-
-                    device = "png",
-                    width = 1.5 * length(slide_results$SLIDE_res$marginal_vars), height = 7, 
+                    device = plot_format,
+                    width = 1.5 * length(slide_results$SLIDE_res$marginal_vars), height = 7,
                     limitsize = FALSE)
 
     if (plot_interactions) {
 
-      ggplot2::ggsave(plot = plt, filename = paste0(out_path, '/plotSigGenes.png'),
-                      device = "png",
-                      width = 1.5 * length(unique(sg_plot_df$lf_num)), height = 7, 
+      ggplot2::ggsave(plot = plt, filename = paste0(out_path, '/sigLFs_marginals_interactions.', plot_format),
+                      device = plot_format,
+                      width = 1.5 * length(unique(sg_plot_df$lf_num)), height = 7,
                       limitsize = FALSE)
 
-      ggplot2::ggsave(plot = lf_graph, filename = paste0(out_path, '/plotInteractions.png'),
-             height = 8, width = 12)
+      ggplot2::ggsave(plot = lf_graph, filename = paste0(out_path, '/sigLFs_interaction_graph.', plot_format),
+                      device = plot_format, height = 8, width = 12)
     }
   }
   return(plot_list)
