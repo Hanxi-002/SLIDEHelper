@@ -20,7 +20,7 @@
 #' @param remove_zero_sd_cols logical for whether to filter features with zero std dev.
 #' @export
 
-clean_data = function(xdata, ydata, edit_data = T,
+FilterData = function(xdata, ydata,
                       col_var_percentile_filter = 0,
                       row_var_percentile_filter = 0,
                       col_coeffvar_percentile_filter = 0,
@@ -67,98 +67,97 @@ clean_data = function(xdata, ydata, edit_data = T,
     cat("\n Y does not have labels. Assuming Y and X have rows in the same order \n")
   }
 
-  if (edit_data) {
+  if (col_sparsity_min_nonzero_percentile == 0 && remove_zero_median_cols == T) {
+    col_sparsity_min_nonzero_percentile = 0.5
+  }
 
-    if (col_sparsity_min_nonzero_percentile == 0 && remove_zero_median_cols == T) {
-      col_sparsity_min_nonzero_percentile = 0.5
+  if (row_sparsity_min_nonzero_percentile == 0 && remove_zero_median_rows == T) {
+    row_sparsity_min_nonzero_percentile = 0.5
+  }
+
+  if (scale_zeroes_directly > 0) {
+    x_zeros = which(x == 0)
+    x[x_zeros] = scale_zeroes_directly
+  }
+
+  if (remove_zero_sd_cols) {
+    # remove zero SD too
+    zero_sd <- which(apply(xdata, 2, sd) == 0)
+
+    if (length(zero_sd) > 0) {
+      xdata = xdata[, -zero_sd]
     }
-
-    if (row_sparsity_min_nonzero_percentile == 0 && remove_zero_median_rows == T) {
-      row_sparsity_min_nonzero_percentile = 0.5
-    }
-
-    if (scale_zeroes_directly > 0) {
-      x_zeros = which(x == 0)
-      x[x_zeros] = scale_zeroes_directly
-    }
-
-    if (remove_zero_sd_cols) {
-      # remove zero SD too
-      zero_sd <- which(apply(xdata, 2, sd) == 0)
-
-      xdata = remove_indices_safely(xdata, zero_sd, remove_zero_sd_cols, col_indices = T)
-    }
+  }
 
 
-    if (col_sparsity_min_nonzero_percentile > 0) {
+  if (col_sparsity_min_nonzero_percentile > 0) {
 
-      col_nonzero = apply(xdata, 2, function(x) length(which(x != 0)) / length(x))
+    col_nonzero = apply(xdata, 2, function(x) length(which(x != 0)) / length(x))
 
-      col_nonzero_hist = hist(col_nonzero, plot = F)
-      col_nonzero_remove = which(col_nonzero > quantile(col_nonzero_hist$breaks, col_sparsity_min_nonzero_percentile))
+    col_nonzero_hist = hist(col_nonzero, plot = F)
+    col_nonzero_remove = which(col_nonzero > quantile(col_nonzero_hist$breaks, col_sparsity_min_nonzero_percentile))
 
-      xdata = remove_indices_safely(xdata, col_nonzero_remove,
-                                    col_sparsity_min_nonzero_percentile, col_indices = T)
-    }
-
-
-    if (col_var_percentile_filter > 0) {
-      # filter column variance percentile
-      colvars <- apply(xdata, 2, var)
-
-      low_var_cols <- which(colvars < quantile(colvars, col_var_percentile_filter))
-
-      xdata = remove_indices_safely(xdata, low_var_cols, col_var_percentile_filter, col_indices = T)
-    }
-
-    if (col_coeffvar_percentile_filter > 0) {
-      col_coeffvar = apply(xdata, 2, function(x) sd(x)/mean(x))
-
-      col_coeffvar_hist = hist(col_coeffvar, plot = F)
-
-      low_col_coeff_vars = which(col_coeffvar > quantile(col_coeffvar_hist$breaks, col_coeffvar_percentile_filter))
-      xdata = remove_indices_safely(xdata, low_col_coeff_vars, col_coeffvar_percentile_filter, col_indices = T)
-    }
+    xdata = remove_indices_safely(xdata, col_nonzero_remove,
+                                  col_sparsity_min_nonzero_percentile, col_indices = T)
+  }
 
 
-    if (row_sparsity_min_nonzero_percentile > 0) {
-      # remove empty rows last
-      row_nonzero = apply(xdata, 1, function(x) length(which(x != 0)) / length(x))
+  if (col_var_percentile_filter > 0) {
+    # filter column variance percentile
+    colvars <- apply(xdata, 2, var)
 
-      # use percentile of histogram bins
-      row_nonzero_hist = hist(row_nonzero, plot = F)
-      row_nonzero_remove = which(row_nonzero > quantile(row_nonzero_hist$breaks, row_sparsity_min_nonzero_percentile))
+    low_var_cols <- which(colvars < quantile(colvars, col_var_percentile_filter))
 
-      # check if we need to remove any rows
-      xdata = remove_indices_safely(xdata, row_nonzero_remove,
-                                    row_sparsity_min_nonzero_percentile, row_indices = T)
-      ydata = remove_indices_safely(ydata, row_nonzero_remove,
-                                    row_sparsity_min_nonzero_percentile, row_indices = T)
-    }
+    xdata = remove_indices_safely(xdata, low_var_cols, col_var_percentile_filter, col_indices = T)
+  }
 
-    if (row_var_percentile_filter) {
-      # remove empty rows last
-      rowvars <- apply(xdata, 1, var)
-      low_var_rows <- which(rowvars < quantile(rowvars, row_var_percentile_filter))
+  if (col_coeffvar_percentile_filter > 0) {
+    col_coeffvar = apply(xdata, 2, function(x) sd(x)/mean(x))
 
-      # check if we need to remove any rows
-      xdata = remove_indices_safely(xdata, low_var_rows,
-                                    row_var_percentile_filter, row_indices = T)
-      ydata = remove_indices_safely(ydata, low_var_rows,
-                                    row_var_percentile_filter, row_indices = T)
-    }
+    col_coeffvar_hist = hist(col_coeffvar, plot = F)
 
-    if (row_coeffvar_percentile_filter > 0) {
-      row_coeffvar = apply(xdata, 1, function(x) sd(x)/mean(x))
+    low_col_coeff_vars = which(col_coeffvar > quantile(col_coeffvar_hist$breaks, col_coeffvar_percentile_filter))
+    xdata = remove_indices_safely(xdata, low_col_coeff_vars, col_coeffvar_percentile_filter, col_indices = T)
+  }
 
-      row_coeffvar_hist = hist(row_coeffvar, plot = F)
 
-      low_row_coeff_vars = which(row_coeffvar > quantile(row_coeffvar_hist$breaks, row_coeffvar_percentile_filter))
+  if (row_sparsity_min_nonzero_percentile > 0) {
+    # remove empty rows last
+    row_nonzero = apply(xdata, 1, function(x) length(which(x != 0)) / length(x))
 
-      xdata = remove_indices_safely(xdata, low_row_coeff_vars, row_coeffvar_percentile_filter, row_indices = T)
-      ydata = remove_indices_safely(ydata, low_row_coeff_vars, row_coeffvar_percentile_filter, row_indices = T)
+    # use percentile of histogram bins
+    row_nonzero_hist = hist(row_nonzero, plot = F)
+    row_nonzero_remove = which(row_nonzero > quantile(row_nonzero_hist$breaks, row_sparsity_min_nonzero_percentile))
 
-    }
+    # check if we need to remove any rows
+    xdata = remove_indices_safely(xdata, row_nonzero_remove,
+                                  row_sparsity_min_nonzero_percentile, row_indices = T)
+    ydata = remove_indices_safely(ydata, row_nonzero_remove,
+                                  row_sparsity_min_nonzero_percentile, row_indices = T)
+  }
+
+  if (row_var_percentile_filter) {
+    # remove empty rows last
+    rowvars <- apply(xdata, 1, var)
+    low_var_rows <- which(rowvars < quantile(rowvars, row_var_percentile_filter))
+
+    # check if we need to remove any rows
+    xdata = remove_indices_safely(xdata, low_var_rows,
+                                  row_var_percentile_filter, row_indices = T)
+    ydata = remove_indices_safely(ydata, low_var_rows,
+                                  row_var_percentile_filter, row_indices = T)
+  }
+
+  if (row_coeffvar_percentile_filter > 0) {
+    row_coeffvar = apply(xdata, 1, function(x) sd(x)/mean(x))
+
+    row_coeffvar_hist = hist(row_coeffvar, plot = F)
+
+    low_row_coeff_vars = which(row_coeffvar > quantile(row_coeffvar_hist$breaks, row_coeffvar_percentile_filter))
+
+    xdata = remove_indices_safely(xdata, low_row_coeff_vars, row_coeffvar_percentile_filter, row_indices = T)
+    ydata = remove_indices_safely(ydata, low_row_coeff_vars, row_coeffvar_percentile_filter, row_indices = T)
+
   }
 
   return(list("x" = xdata, "y" = ydata))

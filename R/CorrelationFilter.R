@@ -13,11 +13,11 @@
 #' @export
 
 
-correlation_filter = function(data, correlation_threshold = 0.8,
+CorrelationFilter = function(data, correlation_threshold = 0.8,
                               correlation_percentile_filter = 0.9,
                               use_hist_to_filter_percentile = F) {
 
-  if (any(correlation_threshold, correlation_percentile_filter) >= 1 | any(correlation_threshold,correlation_percentile_filter) <= 0) {
+  if (any(correlation_threshold >= 1, correlation_percentile_filter>= 1) | any(correlation_threshold <= 0,correlation_percentile_filter <= 0)) {
     stop("correlation_threshold should be between 0 and 1; 0 < correlation_threshold < 1")
   }
   # scale data
