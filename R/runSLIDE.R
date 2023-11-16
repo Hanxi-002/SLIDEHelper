@@ -16,22 +16,25 @@
 #' @export
 
 
-runSLIDE <- function(y_path, z_path = NULL, z_matrix, er_path, method = 4, do_interacts=TRUE, fdr = 0.1, niter = 500, spec = 0.1){
+runSLIDE <- function(y_path, z_path = NULL, z_matrix, er_path, method = 4, do_interacts=TRUE, fdr = 0.1, niter = 500, spec = 0.1,
+                     f_size = 0){
   final_res <- NULL
   y <- as.matrix(utils::read.csv(y_path, row.names = 1))
   if (is.null(z_path) == FALSE){z <- as.matrix(utils::read.csv(z_path, row.names = 1))}
   else{z = z_matrix}
   er_res <- readRDS(er_path)
-  
-  if (er_res$K <= 100){
-    f_size = er_res$K
-  }else (f_size = 100)
-  
+
+  if (f_size <= 0) { # do the default max 100
+    if (er_res$K <= 100){
+      f_size = er_res$K
+    }else (f_size = 100)
+  }
+
   cat("f_size is set as ", f_size, "\n")
-  
+
   SLIDE_res <- SLIDE:::SLIDE(z, y, method = method, do_interacts = do_interacts, betas = NULL, top_prop = NULL, marginals = NULL,
                             spec = spec, fdr = fdr, niter = niter, elbow = FALSE, f_size = f_size, parallel = TRUE, ncore = 10)
-  
+
   SLIDE_param <- c(method, spec, fdr, niter, f_size)
   names(SLIDE_param) <- c("method", "spec", "fdr", "niter", "f_size")
 
