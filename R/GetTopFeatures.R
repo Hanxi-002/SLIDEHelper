@@ -15,6 +15,11 @@
 
 GetTopFeatures <- function(x_path, y_path, er_path, out_path, SLIDE_res, num_top_feats = 10, condition){
 
+  # name checking for condition
+  if (!is.character(condition) & !condition %in% c("corr", "auc")) {
+    stop("condition argument must be either 'corr' or 'auc' ")
+  }
+
   x <- SLIDEHelper:::DetectInputString_or_DataFrame(x_path, type = "matrix") #as.matrix(utils::read.csv(x_path, row.names = 1))
   y <- SLIDEHelper:::DetectInputString_or_DataFrame(y_path, type = "matrix")#as.matrix(utils::read.csv(y_path, row.names = 1))
   er_res <- SLIDEHelper:::DetectInputString_or_DataFrame(er_path, type = "rds") #readRDS(er_path)
@@ -23,11 +28,13 @@ GetTopFeatures <- function(x_path, y_path, er_path, out_path, SLIDE_res, num_top
   if (is.null(ks) == TRUE){stop('The SLIDE_res input is not formatted correctly. Please re-run the runSLIDE function...')}
   if ("auc" == condition & length(unique(y[, 1])) != 2){stop('Only 2 levels allowed for y when condition = "auc".')}
 
-  A <- er_res$A[, paste0("Z", ks)]
+  A <- er_res$A[, ks]
 
   gene_names <- colnames(x)
 
   temp <- NULL
+
+  gene_list = list()
 
   for (i in 1:ncol(A)){
     AUCs <- c()
@@ -69,8 +76,8 @@ GetTopFeatures <- function(x_path, y_path, er_path, out_path, SLIDE_res, num_top
     }
     final <- unique(rbind(top, bot))
     temp[[i]] <- final
-    write.table(final, file = paste0(out_path, "/gene_list_",
-                                     colnames(A)[i], ".txt"), col.names = TRUE, row.names = FALSE, sep = '\t', quote = FALSE)
+    # write.table(final, file = paste0(out_path, "/gene_list_",
+    #                                  colnames(A)[i], ".txt"), col.names = TRUE, row.names = FALSE, sep = '\t', quote = FALSE)
   }
   names(temp) <- colnames(A)
   SLIDE_res$feature_res <- temp

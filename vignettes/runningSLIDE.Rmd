@@ -100,9 +100,9 @@ saveRDS(SLIDE_res, paste0(er_path, "/SLIDE_res.RDS"))
 
 ```{r SLIDEfeat_ssc, eval = T}
 num_top_feats <- 10
-condition <- "cor"
+condition <- "corr" # or "auc"
 
-SLIDE_res <- SLIDEHelper::GetTopFeatures(x_path = SSc_data$x, y_path = SSc_data$y, er_path = SSc_data$er_results, out_path = ".", SLIDE_res = SLIDE_res, num_top_feats = num_top_feats, condition)
+SLIDE_res <- SLIDEHelper::GetTopFeatures(x_path = SSc_data$x, y_path = SSc_data$y, er_path = SSc_data$er_results, out_path = ".", SLIDE_res = SSc_data$SLIDE_res, num_top_feats = num_top_feats, condition)
 
 # saveRDS(SLIDE_res, paste0(er_path, "/SLIDE_res.RDS"))
 ```

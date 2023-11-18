@@ -14,6 +14,11 @@
 
 CalcControlPerformance <- function(z_matrix, y_path, SLIDE_res, niter, condition, out_path){
 
+  # name checking for condition
+  if (!is.character(condition) & !condition %in% c("corr", "auc")) {
+    stop("condition argument must be either 'corr' or 'auc' ")
+  }
+
   y = SLIDEHelper:::DetectInputString_or_DataFrame(y_path, type = "matrix")
   # y <- as.matrix(utils::read.csv(y_path, row.names = 1))
   colnames(y) <- "y"
@@ -37,10 +42,10 @@ CalcControlPerformance <- function(z_matrix, y_path, SLIDE_res, niter, condition
   if (condition == 'auc'){
     lmod  <- lm(y~.,data=Data_real)
     yhat <- predict(lmod,Data_real[,-1],type = 'response')
-    aucreal <- pROC::auc(response=as.matrix(y), predictor=as.matrix(yhat))
+    evalreal <- pROC::auc(response=as.matrix(y), predictor=as.matrix(yhat))
   }else if (condition == 'corr'){
     SumReal <- summary(lm(y ~ ., data = Data_real))
-    SumReal$r.squared
+    evalreal = SumReal$r.squared
   }
 
 
@@ -59,10 +64,10 @@ CalcControlPerformance <- function(z_matrix, y_path, SLIDE_res, niter, condition
     if (condition == 'auc'){
       lmod  <- lm(y~.,data=Data_fullRandom)
       yhat <- predict(lmod,Data_fullRandom[,-1],type = 'response')
-      aucrandom <- pROC::auc(response=as.matrix(y), predictor=as.matrix(yhat))
-      Fullreport <- rbind(Fullreport, aucrandom)
+      evalrandom <- pROC::auc(response=as.matrix(y), predictor=as.matrix(yhat))
+      Fullreport <- rbind(Fullreport, evalrandom)
     }else if (condition == "corr"){
-      SumInt$r.squared
+      evalrandom = SumInt$r.squared
       Fullreport <- rbind(Fullreport, sqrt(SumInt$r.squared))
     }
   }
@@ -80,10 +85,10 @@ CalcControlPerformance <- function(z_matrix, y_path, SLIDE_res, niter, condition
     if (condition == 'auc'){
       lmod  <- lm(y~.,data=Data_partialRandom)
       yhat <- predict(lmod,Data_partialRandom[,-1],type = 'response')
-      aucPrandom <- pROC::auc(response=as.matrix(y), predictor=as.matrix(yhat))
-      Partialreport <- rbind(Partialreport, aucPrandom)
+      evalPrandom <- pROC::auc(response=as.matrix(y), predictor=as.matrix(yhat))
+      Partialreport <- rbind(Partialreport, evalPrandom)
     }else if(condition == 'corr'){
-      SumPInt$r.squared
+      evalPrandom = SumPInt$r.squared
       Partialreport <- rbind(Partialreport, sqrt(SumPInt$r.squared))
     }
   }
@@ -100,11 +105,11 @@ CalcControlPerformance <- function(z_matrix, y_path, SLIDE_res, niter, condition
   # Basic density plot in ggplot2
 
   P2 <- ggplot2::ggplot(df, ggplot2::aes(x = value, fill = group)) + ggplot2::geom_density(alpha = 0.7) + ggplot2::scale_fill_manual(values = cols) +
-    ggplot2::theme_light() + ggplot2::geom_vline(xintercept = aucreal, linetype = "longdash", colour = "red",size=2) +
+    ggplot2::theme_light() + ggplot2::geom_vline(xintercept = evalreal, linetype = "longdash", colour = "red",size=2) +
     ggplot2::ylab("Density") +
     ggplot2::xlab(condition)
 
-  P2 <- P2 + ggplot2::annotate("text", x = aucreal + 0.01, y = 55, label = " ", angle = "90") + ggplot2::xlim(0.25, max(df$value) + 0.05)
+  P2 <- P2 + ggplot2::annotate("text", x = evalreal + 0.01, y = 55, label = " ", angle = "90") + ggplot2::xlim(0.25, max(df$value) + 0.05)
 
   P2 <- P2 + ggplot2::theme(panel.border = ggplot2::element_blank(),
                             panel.grid.major = ggplot2::element_blank(),
