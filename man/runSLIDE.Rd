@@ -6,8 +6,7 @@
 \usage{
 runSLIDE(
   y_path,
-  z_path = NULL,
-  z_matrix,
+  z_path,
   er_path,
   method = 4,
   do_interacts = TRUE,
@@ -22,8 +21,6 @@ runSLIDE(
 
 \item{z_path}{a string that points to the z matrix, user can also input the matrix directly.}
 
-\item{z_matrix}{the z matrix, user can also input a path to the csv file.}
-
 \item{er_path}{a string that points to the final er result as an RDS object.}
 
 \item{method}{which method of SLIDE to run}
@@ -35,6 +32,8 @@ runSLIDE(
 \item{niter}{the number of iterations SLIDE run}
 
 \item{spec}{the threshold to use to choose the latent factors}
+
+\item{z_matrix}{the z matrix, user can also input a path to the csv file.}
 }
 \value{
 A list that contains all key information from SLIDE.

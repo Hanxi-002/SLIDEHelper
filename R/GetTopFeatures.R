@@ -23,7 +23,7 @@ GetTopFeatures <- function(x_path, y_path, er_path, out_path, SLIDE_res, num_top
   if (is.null(ks) == TRUE){stop('The SLIDE_res input is not formatted correctly. Please re-run the runSLIDE function...')}
   if ("auc" == condition & length(unique(y[, 1])) != 2){stop('Only 2 levels allowed for y when condition = "auc".')}
 
-  A <- er_res$A[, ks]
+  A <- er_res$A[, paste0("Z", ks)]
 
   gene_names <- colnames(x)
 
