@@ -16,7 +16,7 @@
 #' @export
 
 
-runSLIDE <- function(y_path, z_path = NULL, z_matrix, er_path, method = 4, do_interacts=TRUE, fdr = 0.1, niter = 500, spec = 0.1,
+runSLIDE <- function(y_path, z_path, er_path, method = 4, do_interacts=TRUE, fdr = 0.1, niter = 500, spec = 0.1,
                      f_size = 0){
   final_res <- NULL
   y <- SLIDEHelper:::DetectInputString_or_DataFrame(y_path, type = "matrix") #as.matrix(utils::read.csv(y_path, row.names = 1))

@@ -80,8 +80,7 @@ names(SSc_data)
 z_mat = CalcZMatrix(x_path = SSc_data$x, er_path = SSc_data$er_results)
 
 SLIDE_res <- runSLIDE(y_path = SSc_data$y,
-                        z_path = NULL,
-                        z_matrix = z_mat,
+                        z_path = z_mat,
                         er_path = SSc_data$er_results,
                         do_interacts = TRUE,
                         spec = 0.1,
