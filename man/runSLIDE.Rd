@@ -13,7 +13,8 @@ runSLIDE(
   do_interacts = TRUE,
   fdr = 0.1,
   niter = 500,
-  spec = 0.1
+  spec = 0.1,
+  f_size = 0
 )
 }
 \arguments{

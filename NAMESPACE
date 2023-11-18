@@ -3,6 +3,8 @@
 export(CalcControlPerformance)
 export(CalcZMatrix)
 export(CheckDataParams)
+export(CorrelationFilter)
+export(FilterData)
 export(GetTopFeatures)
 export(PairwiseInteractions)
 export(ZeroFiltering)

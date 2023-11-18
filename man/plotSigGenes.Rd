@@ -4,7 +4,12 @@
 \alias{plotSigGenes}
 \title{Plot significant genes for significant (marginal) latent factors}
 \usage{
-plotSigGenes(slide_results, plot_interactions = F, out_path = NULL)
+plotSigGenes(
+  slide_results,
+  plot_interactions = F,
+  out_path = NULL,
+  plot_format = "pdf"
+)
 }
 \arguments{
 \item{slide_results}{list - SLIDE results output from runSLIDE function}

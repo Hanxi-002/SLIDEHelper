@@ -1,0 +1,118 @@
+---
+title: "runningSLIDE"
+output: rmarkdown::html_vignette
+date: "2023-11-01"
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+### Install SLIDEHelper
+SLIDEHelper will install the latest versions of SLIDE and Essential Regression
+```{r libinstall, eval = F, tidy=TRUE}
+library(devtools)
+devtools::install_github(repo = "Hanxi-002/SLIDEHelper", force = F,
+                         dependencies = T)
+```
+
+Note that this package will be moved to `jishnu-lab/SLIDE` in future versions.
+```{r imports, message = F}
+library(SLIDEHelper)
+library(tidyverse)
+library(doParallel)
+```
+
+### Run Essential Regression
+```{r essreg, eval = F}
+#!/usr/bin/env Rscript
+args = commandArgs(trailingOnly=TRUE)
+
+library(SLIDEHelper)
+library(tidyverse)
+library(doParallel)
+
+cores <-  as.numeric(Sys.getenv('SLURM_CPUS_PER_TASK', unset=NA))
+if(is.na(cores)) cores <- detectCores()
+registerDoParallel(cores)
+cat('number of cores using', cores, '. . .\n')
+
+EssReg::pipelineER3(yaml_path)
+
+```
+
+You can get more detailed error messages by running `EssReg::pipelineER3(yaml_path)` within the `withCallingHandlers` R function like so:
+```{r wCH, eval = F}
+withCallingHandlers(
+  EssReg::pipelineER3(yaml_path), 
+  error = function(e) { write.to.log(sys.calls()) })
+```
+
+### Run SLIDE
+
+##### Load ER results
+After running ER, you can load your data for SLIDE using the yaml file:
+```{r findERResults, eval = F}
+yaml_input = yaml::yaml.load_file(yaml_path)
+
+# this looks for the ER results from pipeline3 that begins with name 'final_delta...' 
+er_results_path = list.files(er_path, pattern = "final_delta_", full.names = T)
+er_results = readRDS(er_results_path)
+
+x_path = yaml_input$x_path
+y_path = yaml_input$y_path
+
+x_mat = as.matrix(read.csv(x_path, row.names = 1, check.names = F))
+y_mat = as.matrix(read.csv(y_path, row.names = 1, check.names = F))
+
+```
+
+#### Run SLIDE
+```{r SLIDEHelper, eval = F}
+z_mat = EssReg::predZ(x_mat, er_results)
+  colnames(z_mat) = paste0("Z", c(1:ncol(z_mat)))
+  rownames(z_mat) = rownames(y_mat)
+
+# save this z matrix with ER results  
+write.csv(z_mat, paste0(er_path, "/z_mat.csv"))
+
+  SLIDE_res <- runSLIDE(y_path = y_path,
+                        z_path = NULL,
+                        z_matrix = z_mat,
+                        er_path = er_results_path,
+                        do_interacts = TRUE,
+                        spec = 0.2,
+                        niter = 1000)
+
+```
+
+#### Get significant latent factor features
+```{r SLIDEfeat, eval = F}
+num_top_feats <- 10
+condition <- "auc"
+
+SLIDE_res <- SLIDEHelper::GetTopFeatures(x_path, y_path, er_results_path, out_path = er_path, SLIDE_res, num_top_feats = num_top_feats, condition)
+
+saveRDS(SLIDE_res, paste0(er_path, "/SLIDE_res.RDS"))
+```
+
+#### Plot significant marginal and interaction latent factors
+```{r plotSigs, eval = F}
+plotSigGenes(SLIDE_res, out_path = er_path, plot_interaction = TRUE)
+
+```
+
+#### Plot SLIDE performance
+```{r calcperf, eval = F}
+#the SLIDE_res has to be the output from GetTopFeatures
+CalcControlPerformance(z_matrix = z_mat, y_path, SLIDE_res, niter = 1000, condition, out_path = er_path)
+```
+
+
