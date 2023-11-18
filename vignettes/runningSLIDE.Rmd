@@ -24,7 +24,7 @@ devtools::install_github(repo = "Hanxi-002/SLIDEHelper", force = F,
 ```
 
 Note that this package will be moved to `jishnu-lab/SLIDE` in future versions.
-```{r imports, message = F}
+```{r imports, eval = T, message = F}
 library(SLIDEHelper)
 library(tidyverse)
 library(doParallel)
@@ -45,11 +45,10 @@ registerDoParallel(cores)
 cat('number of cores using', cores, '. . .\n')
 
 EssReg::pipelineER3(yaml_path)
-
 ```
 
 You can get more detailed error messages by running `EssReg::pipelineER3(yaml_path)` within the `withCallingHandlers` R function like so:
-```{r wCH, eval = F}
+```{r getER_errors, eval = F}
 withCallingHandlers(
   EssReg::pipelineER3(yaml_path), 
   error = function(e) { write.to.log(sys.calls()) })
@@ -59,7 +58,7 @@ withCallingHandlers(
 
 ##### Load ER results
 After running ER, you can load your data for SLIDE using the yaml file:
-```{r findERResults, eval = F}
+```{r findER_Results, eval = F}
 yaml_input = yaml::yaml.load_file(yaml_path)
 
 # this looks for the ER results from pipeline3 that begins with name 'final_delta...' 
@@ -74,6 +73,14 @@ y_mat = as.matrix(read.csv(y_path, row.names = 1, check.names = F))
 
 ```
 
+You can view example data (input x and y, z_matrix and SLIDE results) from the SLIDE manuscript:
+```{r SLIDEHelper_example_data, eval = T}
+data(SSc_data)
+
+# data stored in a list
+names(SSc_data)
+```
+
 #### Run SLIDE
 ```{r SLIDEHelper, eval = F}
 z_mat = EssReg::predZ(x_mat, er_results)
@@ -83,14 +90,13 @@ z_mat = EssReg::predZ(x_mat, er_results)
 # save this z matrix with ER results  
 write.csv(z_mat, paste0(er_path, "/z_mat.csv"))
 
-  SLIDE_res <- runSLIDE(y_path = y_path,
+SLIDE_res <- runSLIDE(y_path = y_path,
                         z_path = NULL,
                         z_matrix = z_mat,
                         er_path = er_results_path,
                         do_interacts = TRUE,
                         spec = 0.2,
                         niter = 1000)
-
 ```
 
 #### Get significant latent factor features

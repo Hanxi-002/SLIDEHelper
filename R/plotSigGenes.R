@@ -20,6 +20,7 @@ plotSigGenes = function(slide_results, plot_interactions = F, out_path = NULL, p
   # make results into plottable dataframe
   for (lf in 1:length(slide_vars)) {
     lf_df = list2DF(slide_vars[[lf]])
+    colnames(lf_df) = c("A", "correlation", "sign", "color")
     lf_df$lf_num = as.numeric(stringr::str_replace(names(slide_vars)[lf],
                                                    pattern = "Z", replacement = ""))
     sg_df = rbind(sg_df, lf_df)
