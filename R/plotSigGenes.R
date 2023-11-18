@@ -6,8 +6,6 @@
 #' @param plot_interactions logical - whether to plot interaction variables
 #' @export
 
-
-
 plotSigGenes = function(slide_results, plot_interactions = F, out_path = NULL, plot_format = "pdf") {
 
   slide_vars = slide_results$feature_res

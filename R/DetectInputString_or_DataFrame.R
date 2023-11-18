@@ -13,10 +13,11 @@ DetectInputString_or_DataFrame = function(input, type = "matrix") {
   }
 
   # check whether we have a string that points to a valid file
-  if (is.character(input) & file.exists(input)) {
-    return(data_load_function(input))
-  } else if (is.list(input) | is.data.frame(input) | is.matrix(input)) {
+
+  if (is.list(input) | is.data.frame(input) | is.matrix(input)) {
     return(input)
+  } else if (is.character(input) & file.exists(input)) {
+    return(data_load_function(input))
   }
   return(NULL)
 }
