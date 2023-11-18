@@ -25,6 +25,9 @@ plotSigGenes = function(slide_results, plot_interactions = F, out_path = NULL, p
 
     lf_df$lf_num = as.numeric(stringr::str_replace(names(slide_vars)[lf],
                                                    pattern = "Z", replacement = ""))
+
+    lf_df$lf_num = paste0("Z", lf_df$lf_num)
+
     sg_df = rbind(sg_df, lf_df)
 
     max_num_genes_in_any_lf = ifelse(nrow(lf_df) > max_num_genes_in_any_lf,
