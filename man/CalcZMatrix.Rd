@@ -4,7 +4,7 @@
 \alias{CalcZMatrix}
 \title{Calculate Z matrix}
 \usage{
-CalcZMatrix(x_path, er_path, out_path)
+CalcZMatrix(x_path, er_path, out_path = NULL)
 }
 \arguments{
 \item{x_path}{a string that points to the x matrix.}

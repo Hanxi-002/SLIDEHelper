@@ -76,18 +76,13 @@ names(SSc_data)
 ```
 
 #### Run SLIDE
-```{r SLIDEHelper, eval = F}
-z_mat = EssReg::predZ(x_mat, er_results)
-  colnames(z_mat) = paste0("Z", c(1:ncol(z_mat)))
-  rownames(z_mat) = rownames(y_mat)
+```{r SLIDEHelper, eval = T}
+z_mat = CalcZMatrix(x_path = SSc_data$x, er_path = SSc_data$er_results)
 
-# save this z matrix with ER results  
-write.csv(z_mat, paste0(er_path, "/z_mat.csv"))
-
-SLIDE_res <- runSLIDE(y_path = y_path,
+SLIDE_res <- runSLIDE(y_path = SSc_data$y,
                         z_path = NULL,
                         z_matrix = z_mat,
-                        er_path = er_results_path,
+                        er_path = SSc_data$er_results,
                         do_interacts = TRUE,
                         spec = 0.1,
                         niter = 1000)
@@ -102,6 +97,16 @@ SLIDE_res <- SLIDEHelper::GetTopFeatures(x_path, y_path, er_results_path, out_pa
 
 saveRDS(SLIDE_res, paste0(er_path, "/SLIDE_res.RDS"))
 ```
+
+```{r SLIDEfeat_ssc, eval = T}
+num_top_feats <- 10
+condition <- "auc"
+
+SLIDE_res <- SLIDEHelper::GetTopFeatures(x_path = SSc_data$x, y_path = SSc_data$y, er_path = SSc_data$er_results, out_path = ".", SLIDE_res = SSc_data$SLIDE_res$SLIDE_res, num_top_feats = num_top_feats, condition)
+
+# saveRDS(SLIDE_res, paste0(er_path, "/SLIDE_res.RDS"))
+```
+
 
 #### Plot significant marginal and interaction latent factors
 ```{r plotSigs, eval = T}

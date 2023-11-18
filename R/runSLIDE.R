@@ -19,10 +19,11 @@
 runSLIDE <- function(y_path, z_path = NULL, z_matrix, er_path, method = 4, do_interacts=TRUE, fdr = 0.1, niter = 500, spec = 0.1,
                      f_size = 0){
   final_res <- NULL
-  y <- as.matrix(utils::read.csv(y_path, row.names = 1))
-  if (is.null(z_path) == FALSE){z <- as.matrix(utils::read.csv(z_path, row.names = 1))}
-  else{z = z_matrix}
-  er_res <- readRDS(er_path)
+  y <- SLIDEHelper:::DetectInputString_or_DataFrame(y_path, type = "matrix") #as.matrix(utils::read.csv(y_path, row.names = 1))
+  z <- SLIDEHelper:::DetectInputString_or_DataFrame(z_path, type = "matrix")
+  # if (is.null(z_path) == FALSE){z <- as.matrix(utils::read.csv(z_path, row.names = 1))}
+  # else{z = z_matrix}
+  er_res <- SLIDEHelper:::DetectInputString_or_DataFrame(er_path, type = "rds")
 
   if (f_size <= 0) { # do the default max 100
     if (er_res$K <= 100){
