@@ -110,18 +110,16 @@ saveRDS(SLIDE_res, paste0(er_path, "/SLIDE_res.RDS"))
 ```
 
 #### Plot significant marginal and interaction latent factors
-```{r plotSigs, eval = F}
+```{r plotSigs, eval = T}
 # plotSigGenes(SLIDE_res, out_path = er_path, plot_interaction = TRUE)
-plotSigGenes(SSC_data$SLIDE_res, out_path = ".", plot_interaction = TRUE)
-
+plotSigGenes(SSc_data$SLIDE_res, out_path = ".", plot_interaction = TRUE)
 ```
 
 #### Plot SLIDE performance
-```{r calcperf, eval = F}
+```{r calcperf, eval = T}
 #the SLIDE_res has to be the output from GetTopFeatures
 # CalcControlPerformance(z_matrix = z_mat, y_path, SLIDE_res, niter = 1000, condition, out_path = er_path)
-CalcControlPerformance(z_matrix = SSc_data$z_mat, y_path, SLIDE_res, niter = 1000, condition, out_path = er_path)
-
+CalcControlPerformance(z_matrix = SSc_data$z_mat, y_path = SSc_data$y, SLIDE_res = SSc_data$SLIDE_res, niter = 1000, condition, out_path = ".")
 ```
 
 
