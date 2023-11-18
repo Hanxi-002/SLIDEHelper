@@ -25,16 +25,7 @@ devtools::install_github(repo = "Hanxi-002/SLIDEHelper", force = F,
 
 Note that this package will be moved to `jishnu-lab/SLIDE` in future versions.
 ```{r imports, eval = T, message = F}
-library(SLIDEHelper)
-library(tidyverse)
-library(doParallel)
-```
-
-### Run Essential Regression
-```{r essreg, eval = F}
 #!/usr/bin/env Rscript
-args = commandArgs(trailingOnly=TRUE)
-
 library(SLIDEHelper)
 library(tidyverse)
 library(doParallel)
@@ -43,7 +34,10 @@ cores <-  as.numeric(Sys.getenv('SLURM_CPUS_PER_TASK', unset=NA))
 if(is.na(cores)) cores <- detectCores()
 registerDoParallel(cores)
 cat('number of cores using', cores, '. . .\n')
+```
 
+### Run Essential Regression
+```{r essreg, eval = F}
 EssReg::pipelineER3(yaml_path)
 ```
 
