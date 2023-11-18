@@ -8,8 +8,10 @@ DetectInputString_or_DataFrame = function(input, type = "matrix") {
     data_load_function = function(x) { return(as.matrix(read.csv(x, row.names = 1, check.names = F))) }
   } else if (type == "yaml") {
     data_load_function = function(x) { return(yaml::yaml.load_file(x)) }
+  } else if (type == "rds") {
+    data_load_function = function(x) { return(readRDS(x)) }
   } else {
-    cat("\n Type error in loading string/dataframe. Valid options are 'matrix' or 'yaml' ")
+    cat("\n Type error in loading string/dataframe. Valid options are 'matrix', 'yaml', or 'rds' ")
   }
 
   # check whether we have a string that points to a valid file
