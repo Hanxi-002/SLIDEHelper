@@ -14,7 +14,8 @@
 
 CalcControlPerformance <- function(z_matrix, y_path, SLIDE_res, niter, condition, out_path){
 
-  y <- as.matrix(utils::read.csv(y_path, row.names = 1))
+  y = SLIDEHelper:::DetectInputString_or_DataFrame(y_path)
+  # y <- as.matrix(utils::read.csv(y_path, row.names = 1))
   colnames(y) <- "y"
   zz <- row.names(z_matrix)
   if (sum(row.names(y) != row.names(z_matrix)) != 0){
